@@ -57,7 +57,11 @@ void loop()
   // Serial.print(F("°C "));
   // Serial.print(hif);
   // Serial.println(F("°F"));
-  Serial.println(sens.getHumidity());
+  sens.setHumidity();
+  sens.setTemperature();
+  Serial.print(sens.getHumidity());
+  Serial.print(" || ");
   Serial.println(sens.getTemperature());
+
   delay(2000);
 }

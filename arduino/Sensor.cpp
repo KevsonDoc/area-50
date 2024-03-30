@@ -6,12 +6,12 @@ Sensor::Sensor(DHT &f) : dht(f)
 
 void Sensor::setHumidity()
 {
-  temperature = dht.readTemperature();
+  humidity = dht.readHumidity();
 }
 
 void Sensor::setTemperature()
 {
-  humidity = dht.readHumidity();
+  temperature = dht.readTemperature();
 }
 
 float Sensor::getTemperature()
