@@ -14,6 +14,66 @@ void Sensor::setTemperature()
   temperature = dht.readTemperature();
 }
 
+bool Sensor::isHighHumidity()
+{
+  if (this->getHumidity() > 70.00)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool Sensor::isNormalHumidity()
+{
+  if (this->getHumidity() >= 30.00 && this->getHumidity() <= 70.00)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool Sensor::isLowHumidity()
+{
+  if (this->getHumidity() < 30.00)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool Sensor::isHighTemperature()
+{
+  if (this->getTemperature() > 30.00)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool Sensor::isNormalTemperature()
+{
+  if (this->getTemperature() >= 18.00 && this->getTemperature() <= 30.00)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool Sensor::isLowTemperature()
+{
+  if (this->getTemperature() < 18.00)
+  {
+    return true;
+  }
+
+  return false;
+}
+
 float Sensor::getTemperature()
 {
   return temperature;

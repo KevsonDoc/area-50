@@ -1,67 +1,94 @@
 #include <DHT.h>
-
 #include "Sensor.hpp"
+#include "src/led/Led.hpp"
 
-#define DHTPIN 15
-#define DHTTYPE DHT11
+#define DHT_PIN 15
+#define DHT_TYPE DHT11
+#define LCD_PIN 17
 
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht(DHT_PIN, DHT_TYPE);
+Sensor sensor(dht);
 
-Sensor sens(dht);
+Led lowTemperatureAlert = Led(16);
+Led normalTemperatureAlert = Led(4);
+Led highTemperatureAlert = Led(2);
+
+Led lowHumidityAlert = Led(23);
+Led normalHumidityAlert = Led(22);
+Led highHumidityAlert = Led(21);
 
 void setup()
 {
   Serial.begin(115200);
   dht.begin();
-  // pinMode(15, OUTPUT);
+  highHumidityAlert.begin();
+  normalHumidityAlert.begin();
+  lowHumidityAlert.begin();
+  highTemperatureAlert.begin();
+  normalTemperatureAlert.begin();
+  lowTemperatureAlert.begin();
 }
 
 void loop()
 {
-  // // digitalWrite(15, LOW);
-  // // Serial.println("Desligado");
-  // // delay(2000);
-  // // digitalWrite(15, HIGH);
-  // // Serial.println("Ligado");
-  // // delay(2000);
-  // // Wait a few seconds between measurements.
-  // delay(2000);
-  // // Reading temperature or humidity takes about 250 milliseconds!
-  // // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  // float h = dht.readHumidity();
-  // // Read temperature as Celsius (the default)
-  // float t = dht.readTemperature();
-  // // Read temperature as Fahrenheit (isFahrenheit = true)
-  // float f = dht.readTemperature(true);
+  delay(1000);
+  sensor.setHumidity();
+  sensor.setTemperature();
 
-  // // Check if any reads failed and exit early (to try again).
-  // if (isnan(h) || isnan(t) || isnan(f))
-  // {
-  //   Serial.println(F("Failed to read from DHT sensor!"));
-  //   return;
-  // }
+  if (sensor.isHighHumidity()) {
+    Serial.print(sensor.getHumidity());
+    Serial.print(" % ");
+    Serial.println("|| Humidade Alta");
+    highHumidityAlert.lightUp();
+  } else {
+    highHumidityAlert.turnOff();
+  }
 
-  // // Compute heat index in Fahrenheit (the default)
-  // float hif = dht.computeHeatIndex(f, h);
-  // // Compute heat index in Celsius (isFahreheit = false)
-  // float hic = dht.computeHeatIndex(t, h, false);
+  if (sensor.isNormalHumidity()) {
+    Serial.print(sensor.getHumidity());
+    Serial.print(" % ");
+    Serial.println("|| Humidade Normal");
+    normalHumidityAlert.lightUp();
+  } else {
+    normalHumidityAlert.turnOff();
+  }
 
-  // Serial.print(F("Humidity: "));
-  // Serial.print(h);
-  // Serial.print(F("%  Temperature: "));
-  // Serial.print(t);
-  // Serial.print(F("°C "));
-  // Serial.print(f);
-  // Serial.print(F("°F  Heat index: "));
-  // Serial.print(hic);
-  // Serial.print(F("°C "));
-  // Serial.print(hif);
-  // Serial.println(F("°F"));
-  sens.setHumidity();
-  sens.setTemperature();
-  Serial.print(sens.getHumidity());
-  Serial.print(" || ");
-  Serial.println(sens.getTemperature());
+  if (sensor.isLowHumidity()) {
+    Serial.print(sensor.getHumidity());
+    Serial.print(" % ");
+    Serial.println("|| Humidade Baixa");
+    lowHumidityAlert.lightUp();
+  } else {
+    lowHumidityAlert.turnOff();
+  }
 
-  delay(2000);
+  if (sensor.isHighTemperature()) {
+    highTemperatureAlert.lightUp();
+
+    Serial.print(sensor.getTemperature());
+    Serial.print("°C ");
+    Serial.println("|| Temperatura Alta");
+  } else {
+    highTemperatureAlert.turnOff();
+  }
+
+  if (sensor.isNormalTemperature()) {
+    normalTemperatureAlert.lightUp();
+
+    Serial.print(sensor.getTemperature());
+    Serial.print(F("°C "));
+    Serial.println("|| Temperatura Normal");
+  } else {
+    normalTemperatureAlert.turnOff();
+  }
+
+  if (sensor.isLowTemperature()) {
+    lowTemperatureAlert.lightUp();
+
+    Serial.print(sensor.getTemperature());
+    Serial.print("°C ");
+    Serial.println("|| Temperatura Baixa");
+  } else {
+    lowTemperatureAlert.turnOff();
+  }
 }

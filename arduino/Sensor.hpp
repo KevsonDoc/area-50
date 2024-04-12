@@ -1,17 +1,22 @@
 #include <DHT.h>
 
-#ifndef sensor
-#define sensor
+#ifndef sensor_file
+#define sensor_file
 
 class Sensor
 {
 
 public:
   Sensor(DHT &dht);
-
   void setTemperature();
-  float getTemperature();
   void setHumidity();
+  bool isHighHumidity();
+  bool isNormalHumidity();
+  bool isLowHumidity();
+  bool isHighTemperature();
+  bool isNormalTemperature();
+  bool isLowTemperature();
+  float getTemperature();
   float getHumidity();
 
 private:
