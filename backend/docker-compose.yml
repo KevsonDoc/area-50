@@ -1,18 +1,9 @@
-version: '3.8'
-
 services:
-  # database:
-  #   image: mysql:8.0
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #     MYSQL_DATABASE: hook
-  #   ports:
-  #     - 3306:3306
-
   mqtt:
     build:
+      context: .
       dockerfile: MQTT.Dockerfile
     volumes:
-      - /mosquitto:/mosquitto/log
+      - ./mosquitto:/mosquitto/log
     ports:
       - 1883:1883
