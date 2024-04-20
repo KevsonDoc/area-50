@@ -11,8 +11,9 @@ export class MqttService {
 
   public async insert(createMqttDto: DHT11SensorDto): Promise<void> {
     try {
-      const createdCat = new this.catModel(createMqttDto);
-      await createdCat.save();
+      // const createdCat = new this.catModel(createMqttDto);
+      // await createdCat.save();
+      console.log(createMqttDto);
       Logger.log('Sucess');
     } catch (error) {
       Logger.error(error);

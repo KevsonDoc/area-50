@@ -1,32 +1,51 @@
 #include <DHT.h>
 #include "Sensor.hpp"
 #include "src/led/Led.hpp"
+#include <WiFi.h>
+#include <PubSubClient.h>
 
 #define DHT_PIN 15
 #define DHT_TYPE DHT11
 #define LCD_PIN 17
 
+const char* ssid = "MultilaserPRO_ZTE_2.4G_TDEDEd";
+const char* password = "PSRMFKfR";
+const char* mqttBroker = "192.168.1.9"; // Change to your MQTT broker address
+const int mqttPort = 1883;
+const char *topic = "sensor";
+
 DHT dht(DHT_PIN, DHT_TYPE);
 Sensor sensor(dht);
 
-Led lowTemperatureAlert = Led(16);
-Led normalTemperatureAlert = Led(4);
-Led highTemperatureAlert = Led(2);
+WiFiClient wifiClient;
+PubSubClient mqttClient(wifiClient);
 
-Led lowHumidityAlert = Led(23);
-Led normalHumidityAlert = Led(22);
-Led highHumidityAlert = Led(21);
+void reconnect() {
+  while (!mqttClient.connected()) {
+    Serial.println("Connecting to MQTT broker...");
+    String client_id = "esp32-client-";
+    client_id += String(WiFi.macAddress());
+    if (mqttClient.connect(client_id.c_str())) {
+      Serial.println("Connected to MQTT broker!");
+    } else {
+      delay(1000);
+    }
+  }
+}
 
 void setup()
 {
   Serial.begin(115200);
   dht.begin();
-  highHumidityAlert.begin();
-  normalHumidityAlert.begin();
-  lowHumidityAlert.begin();
-  highTemperatureAlert.begin();
-  normalTemperatureAlert.begin();
-  lowTemperatureAlert.begin();
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Conectando ao Wi-Fi...");
+  }
+
+  Serial.println("Conectado ao Wi-Fi!");
+  Serial.println(WiFi.localIP());
 }
 
 void loop()
@@ -34,61 +53,34 @@ void loop()
   delay(1000);
   sensor.setHumidity();
   sensor.setTemperature();
-
-  if (sensor.isHighHumidity()) {
-    Serial.print(sensor.getHumidity());
-    Serial.print(" % ");
-    Serial.println("|| Humidade Alta");
-    highHumidityAlert.lightUp();
+  
+  if (!mqttClient.connected()) {
+    reconnect();
   } else {
-    highHumidityAlert.turnOff();
-  }
+  mqttClient.publish(topic, "Hello WOrld");  }
+  mqttClient.loop();
 
-  if (sensor.isNormalHumidity()) {
-    Serial.print(sensor.getHumidity());
-    Serial.print(" % ");
-    Serial.println("|| Humidade Normal");
-    normalHumidityAlert.lightUp();
-  } else {
-    normalHumidityAlert.turnOff();
-  }
+  // Serial.print(sensor.getHumidity());
+  // Serial.print(" % ");
+  // Serial.println("|| Humidade Alta");
 
-  if (sensor.isLowHumidity()) {
-    Serial.print(sensor.getHumidity());
-    Serial.print(" % ");
-    Serial.println("|| Humidade Baixa");
-    lowHumidityAlert.lightUp();
-  } else {
-    lowHumidityAlert.turnOff();
-  }
+  // Serial.print(sensor.getHumidity());
+  // Serial.print(" % ");
+  // Serial.println("|| Humidade Normal");
 
-  if (sensor.isHighTemperature()) {
-    highTemperatureAlert.lightUp();
+  // Serial.print(sensor.getHumidity());
+  // Serial.print(" % ");
+  // Serial.println("|| Humidade Baixa");
 
-    Serial.print(sensor.getTemperature());
-    Serial.print("°C ");
-    Serial.println("|| Temperatura Alta");
-  } else {
-    highTemperatureAlert.turnOff();
-  }
+  // Serial.print(sensor.getTemperature());
+  // Serial.print("°C ");
+  // Serial.println("|| Temperatura Alta");
 
-  if (sensor.isNormalTemperature()) {
-    normalTemperatureAlert.lightUp();
+  // Serial.print(sensor.getTemperature());
+  // Serial.print(F("°C "));
+  // Serial.println("|| Temperatura Normal");
 
-    Serial.print(sensor.getTemperature());
-    Serial.print(F("°C "));
-    Serial.println("|| Temperatura Normal");
-  } else {
-    normalTemperatureAlert.turnOff();
-  }
-
-  if (sensor.isLowTemperature()) {
-    lowTemperatureAlert.lightUp();
-
-    Serial.print(sensor.getTemperature());
-    Serial.print("°C ");
-    Serial.println("|| Temperatura Baixa");
-  } else {
-    lowTemperatureAlert.turnOff();
-  }
+  // Serial.print(sensor.getTemperature());
+  // Serial.print("°C ");
+  // Serial.println("|| Temperatura Baixa");
 }
