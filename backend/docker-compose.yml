@@ -1,0 +1,18 @@
+services:
+  database:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+
+  mqtt:
+    build:
+      context: .
+      dockerfile: MQTT.Dockerfile
+    volumes:
+      - ./mosquitto:/mosquitto/log
+    ports:
+      - 1883:1883
