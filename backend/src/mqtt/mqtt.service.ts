@@ -13,7 +13,7 @@ export class MqttService {
     try {
       // const createdCat = new this.catModel(createMqttDto);
       // await createdCat.save();
-      console.log(createMqttDto);
+      console.log(typeof createMqttDto);
       Logger.log('Sucess');
     } catch (error) {
       Logger.error(error);

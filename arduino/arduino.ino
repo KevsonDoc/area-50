@@ -38,6 +38,7 @@ void setup()
   Serial.begin(115200);
   dht.begin();
   WiFi.begin(ssid, password);
+  mqttClient.setServer(mqttBroker, mqttPort);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);

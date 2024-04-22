@@ -4,6 +4,8 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { networkInterfaces } from 'os';
 
 async function bootstrap() {
+  console.log("Hello World");
+  
   const interfaces = networkInterfaces();
   const addresses = [];
 
@@ -15,8 +17,12 @@ async function bootstrap() {
       }
     }
   }
+  console.log("lasndk.ajsdkjahdskj \n\n\n");
+  
 
   const app = await NestFactory.create(AppModule);
+  console.log(addresses);
+
   const mqtt = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
