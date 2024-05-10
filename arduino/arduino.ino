@@ -1,87 +1,48 @@
 #include <DHT.h>
-#include "Sensor.hpp"
-#include "src/led/Led.hpp"
-#include <WiFi.h>
-#include <PubSubClient.h>
+#include "src/sensor/Sensor.hpp"
+#include "src/wifi-esp/WifiEsp.hpp"
+#include "src/mqtt/Mqtt.hpp"
 
 #define DHT_PIN 15
 #define DHT_TYPE DHT11
 #define LCD_PIN 17
 
-const char* ssid = "MultilaserPRO_ZTE_2.4G_TDEDEd";
-const char* password = "PSRMFKfR";
-const char* mqttBroker = "192.168.1.9"; // Change to your MQTT broker address
-const int mqttPort = 1883;
-const char *topic = "sensor";
+char* ssid = "MultilaserPRO_ZTE_2.4G_TDEDEd";
+char* password = "PSRMFKfR";
+char* mqttHost = "192.168.1.4"; // Change to your MQTT broker address
+uint16_t mqttPort = 1883;
+char* mqttUsername = "";
+char* mqttPassword = "";
+
+char* topic = "sensor";
 
 DHT dht(DHT_PIN, DHT_TYPE);
 Sensor sensor(dht);
-
+WifiEsp wifiEsp(ssid, password);
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
-
-void reconnect() {
-  while (!mqttClient.connected()) {
-    Serial.println("Connecting to MQTT broker...");
-    String client_id = "esp32-client-";
-    client_id += String(WiFi.macAddress());
-    if (mqttClient.connect(client_id.c_str())) {
-      Serial.println("Connected to MQTT broker!");
-    } else {
-      delay(1000);
-    }
-  }
-}
+Mqtt mqtt (mqttClient, mqttHost, mqttPort);
 
 void setup()
 {
   Serial.begin(115200);
   dht.begin();
-  WiFi.begin(ssid, password);
-  mqttClient.setServer(mqttBroker, mqttPort);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Conectando ao Wi-Fi...");
-  }
-
-  Serial.println("Conectado ao Wi-Fi!");
-  Serial.println(WiFi.localIP());
+  wifiEsp.begin();
+  mqtt.setServer();
+  sensor.begin();
 }
 
 void loop()
 {
   delay(1000);
-  sensor.setHumidity();
-  sensor.setTemperature();
-  
-  if (!mqttClient.connected()) {
-    reconnect();
+  if (!mqtt.isConnected()) {
+    mqtt.connect();
   } else {
-  mqttClient.publish(topic, "Hello WOrld");  }
+    sensor.setHumidity();
+    sensor.setTemperature();
+    sensor.setTimeInfo();
+    Serial.println(sensor.toJSON());
+    mqtt.publish(topic, sensor.toJSON());
+  }
   mqttClient.loop();
-
-  // Serial.print(sensor.getHumidity());
-  // Serial.print(" % ");
-  // Serial.println("|| Humidade Alta");
-
-  // Serial.print(sensor.getHumidity());
-  // Serial.print(" % ");
-  // Serial.println("|| Humidade Normal");
-
-  // Serial.print(sensor.getHumidity());
-  // Serial.print(" % ");
-  // Serial.println("|| Humidade Baixa");
-
-  // Serial.print(sensor.getTemperature());
-  // Serial.print("°C ");
-  // Serial.println("|| Temperatura Alta");
-
-  // Serial.print(sensor.getTemperature());
-  // Serial.print(F("°C "));
-  // Serial.println("|| Temperatura Normal");
-
-  // Serial.print(sensor.getTemperature());
-  // Serial.print("°C ");
-  // Serial.println("|| Temperatura Baixa");
 }
