@@ -5,7 +5,7 @@ export const mqttProviders = [
   {
     provide: 'SENSOR_MODEL',
     useFactory: (connection: Connection) =>
-      connection.model('Cat', Dht11Schema),
+      connection.model('SENSOR', Dht11Schema),
     inject: ['DATABASE_CONNECTION'],
   },
 ];

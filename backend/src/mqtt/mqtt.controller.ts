@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { MqttService } from './mqtt.service';
 import { DHT11SensorDto } from './dto/dht11-sensor.dto';
+import { MqttService } from './mqtt.service';
 
 @Controller()
 export class MqttController {

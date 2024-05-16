@@ -1,4 +1,4 @@
-import { Provider } from '@nestjs/common';
+import { Logger, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as mongoose from 'mongoose';
 
@@ -7,8 +7,12 @@ export const databaseProviders: Provider[] = [
     provide: 'DATABASE_CONNECTION',
     inject: [ConfigService],
     useFactory: (configService: ConfigService): Promise<typeof mongoose> => {
-      console.log(configService.get('DATABASE_URL'));
-      return mongoose.connect(configService.get('DATABASE_URL'));
+      Logger.log('Connecting to the database!');
+      const connection = mongoose.connect(configService.get('DATABASE_URL'), {
+        connectTimeoutMS: 2000,
+      });
+      Logger.log('Connected to the database!');
+      return connection;
     },
   },
 ];
