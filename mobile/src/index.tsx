@@ -1,18 +1,11 @@
-import {View, StyleSheet} from 'react-native';
-import {Route} from './route';
+import {JSX} from 'react';
+import Theme from './assets/theme';
+import HomeScreen from './screens/Home';
 
-export function Main() {
+export default function App(): JSX.Element {
   return (
-    <View style={styles.container}>
-      <Route />
-    </View>
+    <Theme>
+      <HomeScreen />
+    </Theme>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#FFF',
-    flex: 1,
-    padding: 10,
-  },
-});

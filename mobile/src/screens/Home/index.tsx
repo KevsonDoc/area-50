@@ -1,36 +1,17 @@
-import {StyleSheet, View} from 'react-native';
-import {Button} from '../../components/Buttton';
-import {NavigationType} from '../../types/route';
+import {JSX, useContext, useEffect} from 'react';
+import {Text, View} from 'react-native';
+import {ThemeContext} from 'styled-components/native';
 
-interface HomeScreenProps {
-  navigation: NavigationType;
-}
+export default function HomeScreen(): JSX.Element {
+  const themeContext = useContext(ThemeContext);
 
-export function HomeScreen({navigation}: HomeScreenProps) {
+  useEffect(() => {
+    console.log(themeContext);
+  }, [themeContext]);
+
   return (
-    <View style={styles.container}>
-      <Button
-        onPress={() => {
-          navigation.navigate('Live');
-        }}
-        title="Tempo real"
-      />
-      <Button
-        onPress={() => {
-          navigation.navigate('History');
-        }}
-        title="Histórico"
-      />
+    <View>
+      <Text onPress={() => themeContext?.setTheme()}>Hello World</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-  },
-});
