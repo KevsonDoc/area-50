@@ -1,11 +1,7 @@
 import {JSX} from 'react';
-import Theme from './assets/theme';
-import HomeScreen from './screens/Home';
+import 'react-native-gesture-handler';
+import {Navigation} from './navigation';
 
 export default function App(): JSX.Element {
-  return (
-    <Theme>
-      <HomeScreen />
-    </Theme>
-  );
+  return <Navigation />;
 }
